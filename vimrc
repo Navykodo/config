@@ -702,7 +702,7 @@ function! KitHelp() abort
   call KitScratch('快捷键', [
   \ '精简版：普通模式按空格，再按一个键；插入模式先 Esc。',
   \ 'e 打开文件浏览器（方向键移动、Enter打开）',
-  \ 'w 保存    q 关闭当前文件    b 切换已打开文件',
+  \ 'w 保存    q 退出 Vim（未保存时提示）    b 切换已打开文件',
   \ 'a 对齐全文（选中时仅选区）    c 注释/取消注释',
   \ 'j 跳出当前 begin/end；else/else if直接输入后Tab补全。',
   \ 'k 删除光标所在块：含if/else/always头或完整case；u撤销。',
@@ -728,7 +728,7 @@ function! KitHelp() abort
 endfunction
 nnoremap <silent> <leader>e :Lexplore<CR>
 nnoremap <silent> <leader>w :write<CR>
-nnoremap <silent> <leader>q :confirm bdelete<CR>
+nnoremap <silent> <leader>q :confirm qall<CR>
 nnoremap <silent> <leader>b :call KitBuffers()<CR>
 nnoremap <silent> <leader>a :call KitAlign(1,line('$'),0)<CR>
 xnoremap <silent> <leader>a :<C-u>call KitAlign(line("'<"),line("'>"),0)<CR>

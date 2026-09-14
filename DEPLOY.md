@@ -80,6 +80,12 @@ Vim接收自身鼠标事件，复制文字不含行号；普通终端由tmux复�
 tmux复制后保持历史位置，按q返回实时终端。
 真彩色、活动窗格边框、深色状态栏保留，不给Vim背景额外染色。
 
+## 文件管理器中的 HDL 图标
+
+安装器会在当前用户的 hicolor 图标层生成四种醒目图标：`.v` 为蓝色芯片 `V`，`.vh` 为蓝色 `V/H`，`.sv` 为紫色 `SV`，`.svh` 为紫色 `SV/H`。它们只覆盖对应 MIME 图标，不更改全局 Cinnamon/Mint-Y 主题。
+
+系统原本没有 `.vh` 的 Verilog glob，可能按内容误识别为 MATLAB；安装器会注册 `text/x-verilog-header` 并把 `.vh` 固定为 Verilog 头文件。`.v/.sv/.svh` 使用系统已有的 MIME 类型。安装后在 Nemo 按 F5，或关闭并重新打开文件管理器窗口刷新。图标源代码内嵌在 `install.sh`，因此 Git 仓库仍只有四个文件。
+
 ## 离线部署
 
 支持基线：Vim 9.1完整版、tmux 3.3+、Bash、tmux-256color terminfo。主要面向Linux。
@@ -90,8 +96,8 @@ bash install.sh
 ```
 
 不联网、不遥测、不上传、不自动安装工具、不用sudo。
-安装器检查Vim配置与对齐功能，用独立tmux socket校验，不影响现有会话。
-旧配置备份到 ~/.local/state/vim-tmux-kit/backup-*，包括符号链接，不修改符号链接的原目标。
+安装器检查Vim配置与对齐功能，用独立tmux socket校验，不影响现有会话；同时生成 HDL MIME 图标并刷新当前用户的 MIME/图标缓存。
+旧配置备份到 ~/.local/state/vim-tmux-kit/backup-*，包括符号链接和安装器管理的 HDL MIME/图标文件，不修改符号链接的原目标。
 相同配置重复安装无改动。运行时缓存位于 ~/.vim/kit-state，不提交Git。
 
 从完整版升级必须保存并重新打开Vim，仅source不能清除旧映射。

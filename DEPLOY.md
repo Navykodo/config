@@ -130,3 +130,9 @@ bash install.sh --rollback /绝对路径/.local/state/vim-tmux-kit/backup-...
 不从未经批准渠道下载工具。tmux用tmux-256color，为常见桌面终端配置RGB；其他终端需现场验证。
 主题内置vimrc，不依赖旧colors文件；无81列竖线；配对括号用下划线，不用实心背景。
 本版不提供Git菜单、工程检查、实例生成、独立模板菜单、宏菜单、命令搜索或多级菜单；基础语法框架仅通过Tab访问。
+
+## Tcl / FPGA Tcl 高亮
+
+`.tcl` 使用 Vim 自带 Tcl 语法与缩进；`.sdc` 保留内置 SDC 语法（它本身继承 Tcl）；`.xdc` 明确按 Tcl 识别。配色为：标准和厂商命令蓝色粗体，`proc/return` 青色，`if/else/switch` 紫色，循环粉色，`$变量` 金色，数字橙色，字符串绿色，注释灰蓝色，命令选项如 `-force` 为琥珀色。
+
+厂商命令不维护固定单词表，而是识别每行开头和 `[...]` 命令替换开头的命令位置，因此 Pango、Vivado、OpenROAD、Yosys 等工具新增命令也会高亮。注释中的内容不会误当成命令；缩进统一为4空格。该功能只负责语法视觉，不提供 Tcl 自动补全或工具命令校验。

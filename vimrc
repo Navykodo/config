@@ -56,6 +56,24 @@ function! KitTheme() abort
   hi Operator guifg=NONE ctermfg=NONE
   hi Delimiter guifg=NONE ctermfg=NONE
   hi Special guifg=#58a6bb ctermfg=73
+  " Tcl: commands, control flow, substitutions and EDA options should be
+  " distinguishable at a glance without replacing Vim's built-in parser.
+  hi tclCommand guifg=#82aadd gui=bold ctermfg=110 cterm=bold
+  hi tclProcCommand guifg=#67e8f9 gui=bold ctermfg=117 cterm=bold
+  hi tclConditional guifg=#c792ea gui=bold ctermfg=176 cterm=bold
+  hi tclRepeat guifg=#f78cbe gui=bold ctermfg=212 cterm=bold
+  hi tclVarRef guifg=#f5c26b ctermfg=221
+  hi tclVars guifg=#f5c26b ctermfg=221
+  hi tclBoolean guifg=#efac73 gui=bold ctermfg=215 cterm=bold
+  hi tclNumber guifg=#efac73 ctermfg=215
+  hi tclString guifg=#81ad75 ctermfg=108
+  hi tclComment guifg=#8192ab gui=NONE ctermfg=103 cterm=NONE
+  hi tclSpecial guifg=#67e8f9 ctermfg=117
+  hi KitTclCommand guifg=#82aadd gui=bold ctermfg=110 cterm=bold
+  hi KitTclOption guifg=#d6aa58 ctermfg=179
+  hi KitTclControl guifg=#c792ea gui=bold ctermfg=176 cterm=bold
+  hi KitTclLoop guifg=#f78cbe gui=bold ctermfg=212 cterm=bold
+  hi KitTclProc guifg=#67e8f9 gui=bold ctermfg=117 cterm=bold
   hi MatchParen guifg=#d6aa58 guibg=NONE gui=bold,underline ctermfg=179 ctermbg=NONE cterm=bold,underline term=underline
   hi LineNr guifg=#62738a ctermfg=60
   hi CursorLineNr guifg=#d6aa58 gui=bold ctermfg=179
@@ -652,6 +670,23 @@ function! KitComment(first,last) abort
   call setline(a:first,l:lines)
 endfunction
 
+function! KitTclSyntax() abort
+  setlocal expandtab tabstop=4 softtabstop=4 shiftwidth=4
+  " Vendor tools add thousands of commands. Highlight the command position
+  " structurally, so Vivado/Pango/OpenROAD commands need no hard-coded list.
+  silent! syntax clear KitTclCommand
+  silent! syntax clear KitTclOption
+  silent! syntax clear KitTclControl
+  silent! syntax clear KitTclLoop
+  silent! syntax clear KitTclProc
+  syntax match KitTclCommand /^\s*\zs[[:alpha:]_][[:alnum:]_:]*\ze\%([[:space:]]\|$\)/ containedin=ALLBUT,tclComment
+  syntax match KitTclCommand /\[\s*\zs[[:alpha:]_][[:alnum:]_:]*\ze\%([[:space:]\]]\)/ containedin=ALLBUT,tclComment
+  syntax match KitTclOption /\s\zs-[[:alpha:]][-[:alnum:]_]*\>/ containedin=ALLBUT,tclComment,tclString
+  syntax match KitTclControl /\<\%(if\|then\|else\|elseif\|switch\|catch\|try\|throw\|finally\)\>/ containedin=ALLBUT,tclComment,tclString
+  syntax match KitTclLoop /\<\%(while\|for\|foreach\|break\|continue\)\>/ containedin=ALLBUT,tclComment,tclString
+  syntax match KitTclProc /\<\%(proc\|apply\|coroutine\|return\|yield\|yieldto\|tailcall\)\>/ containedin=ALLBUT,tclComment,tclString
+endfunction
+
 function! KitScratch(title,lines) abort
   botright new
   setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nowrap
@@ -722,6 +757,7 @@ function! KitHelp() abort
   \ 'Tab结束词：end endcase endmodule endfunction endtask endgenerate join。',
   \ 'SystemVerilog另有：always_ff always_comb always_latch foreach interface package logic。',
   \ '缩写示例：alw/beg/cas/func/gen + Tab；end精确输入不会变成endmodule。',
+  \ 'Tcl：.tcl/.sdc/.xdc启用语义高亮；命令蓝、流程紫、变量金、字符串绿。',
   \ 'i 输入，Esc 返回；v/V 选字/行；/ 搜索，n/N 下一/上一处。',
   \ 'u 撤销，Ctrl-r重做；选区y或yy自动同步系统剪贴板，鼠标拖选松开复制。',
   \ 'tmux：Ctrl-b 后 v/s 分屏，方向键切换，z放大，q关闭，h帮助。'])
@@ -760,9 +796,11 @@ augroup kit
   autocmd!
   autocmd TextYankPost * call KitYankToClipboard()
   autocmd BufRead,BufNewFile,BufEnter *.v,*.vh,*.sv,*.svh call KitAttachHDL()
+  autocmd BufRead,BufNewFile *.xdc setfiletype tcl
   autocmd BufRead,BufNewFile *.lds,*.ldscript setfiletype ld
   autocmd FileType c,cpp,ld call KitPairs()
   autocmd FileType verilog,systemverilog call KitVerilog()
+  autocmd FileType tcl,sdc call KitTclSyntax()
   autocmd FileType make setlocal noexpandtab
   autocmd FileType help,qf nnoremap <silent> <buffer> q :close<CR>
   autocmd BufReadPost * if line("'\"")>0 && line("'\"")<=line('$') | execute "normal! g\x60\"" | endif
